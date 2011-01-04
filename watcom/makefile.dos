@@ -1,0 +1,55 @@
+PROJECT = echox
+PLATFORM = dos
+SRCDIR = ..\src
+DSTDIR = ..\bin\dos
+SRCS = echox2.c
+
+SRCE=.c
+OBJE=.obj
+#APPE=.com
+
+OBJS := $(SRCS:$(SRCE)=$(OBJE))
+PROJECT := $(DSTDIR)\$(PROJECT)
+SOURCES := $(addprefix $(DSTDIR)\,$(SRCS))
+OBJECTS := $(addprefix $(DSTDIR)\,$(OBJS))
+FILES := $(PROJECT).exe
+
+CC = wcc
+LINK = wlink
+LOP = m,maxe=25,q,symf
+LLIBF = cstart_t
+ifeq ($(PLATFORM),dos)
+CFLAGS = -os -w4 -e25 -zq -otexan -d1 -bt=dos -ms
+LSYS = SYS DOS
+FILES += $(PROJECT).com
+else
+endif
+
+ifdef LOP
+LFLAGS += OP $(LOP)
+endif
+ifdef LLIBF
+LFLAGS += LIBF $(LLIBF)
+endif
+
+vpath %$(SRCE) $(SRCDIR)
+vpath %$(OBJE) $(DSTDIR)
+
+.PHONY: $(PROJECT)
+
+$(PROJECT) : $(FILES)
+
+$(PROJECT).exe : $(OBJS) 
+	$(LINK) $(LSYS) $(LFLAGS) NAME $@ LIBF $(OBJECTS)
+
+$(PROJECT).com : $(OBJS) 
+	$(LINK) $(LSYS) COM $(LFLAGS) NAME $@ LIBF $(OBJECTS)
+
+%$(OBJE) : %$(SRCE)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -fo$(DSTDIR)\$@ $(SRCDIR)\$(^F)
+
+.PHONY: clean
+clean:
+	rm -f $(FILES) $(OBJECTS)
+
+
